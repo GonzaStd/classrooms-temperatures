@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from paho.mqtt import client as mqtt_client
-broker = '192.168.0.224'
+broker = '127.0.0.1'
 port = 1883
 topic = "#" # piso/lugar(aula)/nro/magnitud
 client_id = 'python-mqtt-sub'

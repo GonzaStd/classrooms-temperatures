@@ -119,7 +119,7 @@ String headGetContinueUrl(const String &location) {
         if (eol < 0) eol = body.length();
         String val = body.substring(colon+1, eol);
         val.trim();
-        Serial.println("Continue-Url extraído del body: " + val);
+        //Serial.println("Continue-Url extraído del body: " + val);
         https.end();
         return val;
       }
@@ -130,7 +130,7 @@ String headGetContinueUrl(const String &location) {
       if (q < 0) q = body.indexOf('\'', p);
       if (q < 0) q = body.length();
       String candidate = body.substring(p, q);
-      Serial.println("Candidate Continue-url from body: " + candidate);
+      //Serial.println("Candidate Continue-url from body: " + candidate);
       https.end();
       return candidate;
     }
@@ -142,9 +142,17 @@ String headGetContinueUrl(const String &location) {
 
 // --- Setup ---
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(1000);
   WiFi.mode(WIFI_STA);
+  WiFi.disconnect(true);
+  delay(1000);
+  Serial.println("We are about to begin. WiFi status: ");
+  Serial.println(WiFi.status());
+  Serial.println("WiFi networks: ");
+  Serial.println(WiFi.scanNetworks());
+
+  
   WiFi.begin(SSID);
 
   Serial.print("Conectando a WiFi...");
@@ -167,9 +175,9 @@ void setup() {
     Serial.println("No hubo redirect. Puede que ya estés autenticado o gateway no intercepta.");
     return;
   }
-  Serial.println("URL Splash detectada: " + splashURL);
+  //Serial.println("URL Splash detectada: " + splashURL);
 
-  // HEAD para Continue-Url
+  // HEAD para Continue-UrlSerial.print
   String continueUrl = headGetContinueUrl(splashURL);
   Serial.println("Continue-Url final: " + continueUrl);
 }
