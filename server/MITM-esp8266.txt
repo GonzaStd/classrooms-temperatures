@@ -1,2 +1,0 @@
-Si quiero ver el tráfico del esp8266 tendría que hacer un Man In The Middle. Su MAC es 3c:71:bf:32:42:ff y su IP era 10.160.11.8
-Esto para poder verlo en wireshark por ejemplo, y poder debuggear.
