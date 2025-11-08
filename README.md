@@ -1,7 +1,7 @@
 > [!IMPORTANT]  
 > This project has been made for a specific purpose. If you want to replicate this, you would have to ADAPT IT. However, example code and circuit documentation are provided below on the index, and they are for general use. 
 
-![Circuit diagram](circuit_image.png)
+![Circuit diagram](circuit.png)
 
 [Here](https://app.cirkitdesigner.com/project/02f16717-05df-46d2-9647-529fff1c8d03) is the url of the circuit.
 
