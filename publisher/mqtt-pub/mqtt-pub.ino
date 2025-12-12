@@ -6,30 +6,21 @@
 #include <ESP8266mDNS.h>
 
 #define DHTPIN D2
-#define DHTTYPE DHT22
-
+#define DHTTYPE DHT11
+#define probeUrl "http://detectportal.firefox.com/canonical.html"
+#define topic "aula/1"
 // WiFi
 const char* ssid = "BA Escuela";
-
-/* MUST CONFIGURE WITH THE RIGHT SUBNET
-IPAddress local_IP(192,168,0,50); // FREE IP ON THE NETWORK
-IPAddress gateway(192,168,0,1);   // ROUTER IP
-IPAddress subnet(255,255,255,0);
-*/
 
 // MQTT
 const char* mqttServer = "not-known-yet";
 const int mqttPort = 1883;
-const char* topicData = "1/aula/1"; // Example
-const char* topicSend = "send";
 
 DHT dht(DHTPIN, DHTTYPE);
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 // Portal detection
-const char* probeUrl = "http://detectportal.firefox.com/canonical.html";
-
 String detectPortal() {
   HTTPClient http;
   WiFiClient client;
@@ -86,6 +77,7 @@ void setup() {
     Serial.println("mDNS failed");
   }
   dht.begin();
+
   
   client.setServer(mqttServer, mqttPort);
   client.setCallback(mqttCallback);
@@ -105,7 +97,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
-void reconnect() {
+void sendMQTT(float temp, float hum) { // No estoy seguro si este código sirve para mandar la temperatura
   String clientId = "ESP-" + String(ESP.getChipId());
   Serial.println("MQTT Client ID: " + clientId);
   const char* username = "raspberrypi";
@@ -116,13 +108,6 @@ void reconnect() {
     // Intentar conectar
     if (client.connect(clientId.c_str(), username, password)) {
       Serial.println(" connected!");
-      
-      // Suscribirse al topic
-      if (client.subscribe(topicSend)) {
-        Serial.println("Subscribed to topic: " + String(topicSend));
-      } else {
-        Serial.println("Failed to subscribe to topic: " + String(topicSend));
-      }
     } else {
       // Mostrar el error de conexión (devuelve código de PubSubClient)
       int error = client.state();
@@ -137,10 +122,7 @@ void reconnect() {
 }
 
 
-void sendSensorData() {
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
-
+void pubMQTT(float temp, float hum) { // Fijate si esto te sirve
   if (isnan(h) || isnan(t)) {
     Serial.println("DHT read failed");
     return;
@@ -149,17 +131,9 @@ void sendSensorData() {
   String payload = "{\"temperature\":" + String(t) + ",\"humidity\":" + String(h) + "}";
   
   // Publicar with QoS 1
-  if (client.publish(topicData, payload.c_str())) {
+  if (client.publish(topic, payload.c_str())) {
     Serial.println("Data sent with QoS 1");
   } else {
     Serial.println("Publish failed");
   }
-}
-
-void loop() {
-  if (!client.connected()) {
-    reconnect();
-  }
-  client.loop();
-  delay(1000);
 }
